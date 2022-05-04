@@ -66,7 +66,7 @@ jobs:
         tenant-id: ${{ secrets.SPN_TENANT_ID }}
 
     - name: Export solution
-      uses: microsoft/powerplatform-actions/export-solution@v0
+      uses: microsoft/powerplatform-actions/export-solution@v0.6.2
       with:
         environment-url: ${{ steps.env_urls.outputs.source_url }}
         app-id: ${{ secrets.SPN_CLIENT_ID }}
