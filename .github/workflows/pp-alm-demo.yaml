@@ -11,7 +11,7 @@ on:
         type: string
         required: true
         description: Power platform solution name
-      source:
+      source_env:
         type: choice
         required: true
         description: The source environment of Power Platform
@@ -19,7 +19,7 @@ on:
         options:
         - DEFAULT
         - PROD
-      target:
+      target_env:
         type: choice
         required: true
         description: The target environment of Power Platform
@@ -39,21 +39,23 @@ jobs:
       id: env_urls
       shell: pwsh
       run: |
-        if (${{ inputs.source }} -eq "DEFAULT") {
-          $source = ${{ secrets.PP_DEFAULT_URL }}
-        } elseif (${{ inputs.source }} -eq "PROD") {
-          $source = ${{ secrets.PP_PROD_URL }}
+        $sourceEnv = "${{ inputs.source_env }}"
+        if ($sourceEnv -eq "DEFAULT") {
+          $sourceUrl = ${{ secrets.PP_DEFAULT_URL }}
+        } elseif ($sourceEnv -eq "PROD") {
+          $sourceUrl = ${{ secrets.PP_PROD_URL }}
         }
 
-        echo "::set-output name=source_url::$source"
+        echo "::set-output name=source_url::$sourceUrl"
 
-        if (${{ inputs.target }} -eq "DEFAULT") {
-          $target = ${{ secrets.PP_DEFAULT_URL }}
-        } elseif (${{ inputs.source }} -eq "PROD") {
-          $target = ${{ secrets.PP_PROD_URL }}
+        $targetEnv = "${{ inputs.target_env }}"
+        if ($targetEnv -eq "DEFAULT") {
+          $targetUrl = ${{ secrets.PP_DEFAULT_URL }}
+        } elseif ($targetEnv -eq "PROD") {
+          $targetUrl = ${{ secrets.PP_PROD_URL }}
         }
 
-        echo "::set-output name=target_url::$target"
+        echo "::set-output name=target_url::$targetUrl"
 
     - name: Publish solution
       uses: microsoft/powerplatform-actions/publish-solution@v0
