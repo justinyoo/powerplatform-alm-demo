@@ -41,7 +41,7 @@ jobs:
       run: |
         if (${{ inputs.source }} -eq "DEFAULT") {
           $source = ${{ secrets.PP_DEFAULT_URL }}
-        } else if (${{ inputs.source }} -eq "PROD") {
+        } elseif (${{ inputs.source }} -eq "PROD") {
           $source = ${{ secrets.PP_PROD_URL }}
         }
 
@@ -49,7 +49,7 @@ jobs:
 
         if (${{ inputs.target }} -eq "DEFAULT") {
           $target = ${{ secrets.PP_DEFAULT_URL }}
-        } else if (${{ inputs.source }} -eq "PROD") {
+        } elseif (${{ inputs.source }} -eq "PROD") {
           $target = ${{ secrets.PP_PROD_URL }}
         }
 
