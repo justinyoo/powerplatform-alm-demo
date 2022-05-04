@@ -1,0 +1,89 @@
+name: Power Platform ALM Demo - Export
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        type: string
+        required: true
+        description: Branch name for review
+      solution_name:
+        type: string
+        required: true
+        description: Power platform solution name
+      source:
+        type: choice
+        required: true
+        description: The source environment of Power Platform
+        default: DEFAULT
+        options:
+        - DEFAULT
+        - PROD
+      target:
+        type: choice
+        required: true
+        description: The target environment of Power Platform
+        default: PROD
+        options:
+        - DEFAULT
+        - PROD
+
+jobs:
+  export_solution:
+    name: Solution Export
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set source and target environments
+      id: env_urls
+      shell: pwsh
+      run: |
+        if (${{ inputs.source -eq "DEFAULT" }}) {
+          $source = ${{ secrets.PP_DEFAULT_URL }}
+        } else if (${{ inputs.source -eq "PROD" }}) {
+          $source = ${{ secrets.PP_PROD_URL }}
+        }
+
+        echo "::set-output name=source_url::$source"
+
+        if (${{ inputs.target -eq "DEFAULT" }}) {
+          $target = ${{ secrets.PP_DEFAULT_URL }}
+        } else if (${{ inputs.source -eq "PROD" }}) {
+          $target = ${{ secrets.PP_PROD_URL }}
+        }
+
+        echo "::set-output name=target_url::$target"
+
+    - name: Publish solution
+      uses: microsoft/powerplatform-actions/publish-solution@v0
+      with:
+        environment-url: ${{ steps.env_urls.outputs.source_url }}
+        app-id: ${{ secrets.SPN_CLIENT_ID }}
+        client-secret: ${{ secrets.SPN_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.SPN_TENANT_ID }}
+
+    - name: Export solution
+      uses: microsoft/powerplatform-actions/export-solution@v0
+      with:
+        environment-url: ${{ steps.env_urls.outputs.source_url }}
+        app-id: ${{ secrets.SPN_CLIENT_ID }}
+        client-secret: ${{ secrets.SPN_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.SPN_TENANT_ID }}
+        solution-name: ${{ inputs.solution_name }}
+        solution-output-file: ${{ inputs.solution_name }}.zip
+        working-directory: out
+
+    - name: Unpack solution
+      uses: microsoft/powerplatform-actions/unpack-solution@v0
+      with:
+        solution-file: out/${{ inputs.solution_name }}.zip
+        solution-folder: out/solutions/${{ inputs.solution_name }}
+
+    - name: Prepare solution changes for check-in into source control
+      uses: microsoft/powerplatform-actions/branch-solution@v0
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        branch-name: ${{ inputs.branch_name }}
+        solution-folder: out/solutions/${{ inputs.solution_name }}
+        solution-target-folder: src/solutions/${{ inputs.solution_name }}
