@@ -57,6 +57,11 @@ jobs:
 
         echo "::set-output name=target_url::$targetUrl"
 
+    - name: Check outputs
+      shell: pwsh
+      run: |
+        echo "Source URL: ${{ steps.env_urls.outputs.source_url }}"
+
     - name: Publish solution
       uses: microsoft/powerplatform-actions/publish-solution@v0
       with:
