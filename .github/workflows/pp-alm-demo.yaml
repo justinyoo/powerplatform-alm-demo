@@ -41,18 +41,18 @@ jobs:
       run: |
         $sourceEnv = "${{ github.event.inputs.source_env }}"
         if ($sourceEnv -eq "DEFAULT") {
-          $sourceUrl = ${{ secrets.PP_DEFAULT_URL }}
+          $sourceUrl = "${{ secrets.PP_DEFAULT_URL }}"
         } elseif ($sourceEnv -eq "PROD") {
-          $sourceUrl = ${{ secrets.PP_PROD_URL }}
+          $sourceUrl = "${{ secrets.PP_PROD_URL }}"
         }
 
         echo "::set-output name=source_url::$sourceUrl"
 
         $targetEnv = "${{ github.event.inputs.target_env }}"
         if ($targetEnv -eq "DEFAULT") {
-          $targetUrl = ${{ secrets.PP_DEFAULT_URL }}
+          $targetUrl = "${{ secrets.PP_DEFAULT_URL }}"
         } elseif ($targetEnv -eq "PROD") {
-          $targetUrl = ${{ secrets.PP_PROD_URL }}
+          $targetUrl = "${{ secrets.PP_PROD_URL }}"
         }
 
         echo "::set-output name=target_url::$targetUrl"
