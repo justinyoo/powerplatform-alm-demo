@@ -32,7 +32,7 @@ jobs:
   export_solution:
     name: Solution Export
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Set source and target environments
