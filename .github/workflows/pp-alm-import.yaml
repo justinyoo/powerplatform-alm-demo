@@ -47,7 +47,7 @@ jobs:
     - name: Pack solution
       uses: microsoft/powerplatform-actions/pack-solution@v0
       with:
-        solution-folder: 'out/solutions/${{ github.event.inputs.solution_name }}'
+        solution-folder: 'src/solutions/${{ github.event.inputs.solution_name }}'
         solution-file: 'out/${{ github.event.inputs.solution_name }}.zip'
 
     - name: Import solution to ${{ github.event.inputs.target_env }}
