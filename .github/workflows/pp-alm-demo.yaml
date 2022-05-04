@@ -39,17 +39,17 @@ jobs:
       id: env_urls
       shell: pwsh
       run: |
-        if (${{ inputs.source -eq "DEFAULT" }}) {
+        if (${{ inputs.source }} -eq "DEFAULT") {
           $source = ${{ secrets.PP_DEFAULT_URL }}
-        } else if (${{ inputs.source -eq "PROD" }}) {
+        } else if (${{ inputs.source }} -eq "PROD") {
           $source = ${{ secrets.PP_PROD_URL }}
         }
 
         echo "::set-output name=source_url::$source"
 
-        if (${{ inputs.target -eq "DEFAULT" }}) {
+        if (${{ inputs.target }} -eq "DEFAULT") {
           $target = ${{ secrets.PP_DEFAULT_URL }}
-        } else if (${{ inputs.source -eq "PROD" }}) {
+        } else if (${{ inputs.source }} -eq "PROD") {
           $target = ${{ secrets.PP_PROD_URL }}
         }
 
