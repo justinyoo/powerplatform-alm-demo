@@ -57,11 +57,6 @@ jobs:
 
         echo "::set-output name=target_url::$targetUrl"
 
-    - name: Check outputs
-      shell: pwsh
-      run: |
-        echo "Source URL: ${{ steps.env_urls.outputs.source_url }}"
-
     - name: Publish solution
       uses: microsoft/powerplatform-actions/publish-solution@v0
       with:
@@ -78,19 +73,19 @@ jobs:
         client-secret: ${{ secrets.SPN_CLIENT_SECRET }}
         tenant-id: ${{ secrets.SPN_TENANT_ID }}
         solution-name: ${{ github.event.inputs.solution_name }}
-        solution-output-file: ${{ github.event.inputs.solution_name }}.zip
-        working-directory: out
+        solution-output-file: '${{ github.event.inputs.solution_name }}.zip'
+        working-directory: 'out'
 
     - name: Unpack solution
       uses: microsoft/powerplatform-actions/unpack-solution@v0
       with:
-        solution-file: out/${{ github.event.inputs.solution_name }}.zip
-        solution-folder: out/solutions/${{ github.event.inputs.solution_name }}
+        solution-file: 'out/${{ github.event.inputs.solution_name }}.zip'
+        solution-folder: 'out/solutions/${{ github.event.inputs.solution_name }}'
 
     - name: Prepare solution changes for check-in into source control
       uses: microsoft/powerplatform-actions/branch-solution@v0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         branch-name: ${{ github.event.inputs.branch_name }}
-        solution-folder: out/solutions/${{ github.event.inputs.solution_name }}
-        solution-target-folder: src/solutions/${{ github.event.inputs.solution_name }}
+        solution-folder: 'out/solutions/${{ github.event.inputs.solution_name }}'
+        solution-target-folder: 'src/solutions/${{ github.event.inputs.solution_name }}'
