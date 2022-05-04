@@ -1,0 +1,62 @@
+name: Power Platform ALM Import
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        type: choice
+        required: true
+        description: The target environment of Power Platform
+        default: PROD
+        options:
+        - DEFAULT
+        - PROD
+      solution_name:
+        type: string
+        required: true
+        description: Power platform solution name
+
+jobs:
+  import_solution:
+    name: Solution Import
+
+    runs-on: windows-latest
+
+    env:
+      RUNNER_DEBUG: 1
+
+    steps:
+    - name: Set target environments
+      id: env_urls
+      shell: pwsh
+      run: |
+        $targetEnv = "${{ github.event.inputs.target_env }}"
+        if ($targetEnv -eq "DEFAULT") {
+          $targetUrl = "${{ secrets.PP_DEFAULT_URL }}"
+        } elseif ($targetEnv -eq "PROD") {
+          $targetUrl = "${{ secrets.PP_PROD_URL }}"
+        }
+
+        echo "::set-output name=target_url::$targetUrl"
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        lfs: true
+
+    - name: Pack solution
+      uses: microsoft/powerplatform-actions/pack-solution@v0
+      with:
+        solution-folder: 'out/solutions/${{ github.event.inputs.solution_name }}'
+        solution-file: 'out/${{ github.event.inputs.solution_name }}.zip'
+
+    - name: Import solution to ${{ github.event.inputs.target_env }}
+      uses: microsoft/powerplatform-actions/import-solution@0.4.0
+      with:
+        environment-url: ${{ steps.env_urls.outputs.target_url }}
+        app-id: ${{ secrets.SPN_CLIENT_ID }}
+        client-secret: ${{ secrets.SPN_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.SPN_TENANT_ID }}
+        solution-file: 'out/${{ github.event.inputs.solution_name }}.zip'
+        force-overwrite: true
+        publish-changes: true

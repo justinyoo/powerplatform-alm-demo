@@ -1,4 +1,4 @@
-name: Power Platform ALM Demo - Export
+name: Power Platform ALM Export
 
 on:
   workflow_dispatch:
@@ -8,14 +8,6 @@ on:
         required: true
         description: The source environment of Power Platform
         default: DEFAULT
-        options:
-        - DEFAULT
-        - PROD
-      target_env:
-        type: choice
-        required: true
-        description: The target environment of Power Platform
-        default: PROD
         options:
         - DEFAULT
         - PROD
@@ -38,7 +30,7 @@ jobs:
       RUNNER_DEBUG: 1
 
     steps:
-    - name: Set source and target environments
+    - name: Set source environments
       id: env_urls
       shell: pwsh
       run: |
@@ -50,15 +42,6 @@ jobs:
         }
 
         echo "::set-output name=source_url::$sourceUrl"
-
-        $targetEnv = "${{ github.event.inputs.target_env }}"
-        if ($targetEnv -eq "DEFAULT") {
-          $targetUrl = "${{ secrets.PP_DEFAULT_URL }}"
-        } elseif ($targetEnv -eq "PROD") {
-          $targetUrl = "${{ secrets.PP_PROD_URL }}"
-        }
-
-        echo "::set-output name=target_url::$targetUrl"
 
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -73,7 +56,7 @@ jobs:
         client-secret: ${{ secrets.SPN_CLIENT_SECRET }}
         tenant-id: ${{ secrets.SPN_TENANT_ID }}
 
-    - name: Export solution
+    - name: Export solution from ${{ github.event.inputs.source_env }}
       uses: microsoft/powerplatform-actions/export-solution@0.4.0
       with:
         environment-url: ${{ steps.env_urls.outputs.source_url }}
@@ -90,10 +73,11 @@ jobs:
         solution-file: 'out/${{ github.event.inputs.solution_name }}.zip'
         solution-folder: 'out/solutions/${{ github.event.inputs.solution_name }}'
 
-    - name: Prepare solution changes for check-in into source control
-      uses: microsoft/powerplatform-actions/branch-solution@0.4.0
+    - name: Create branch for solution
+      uses: microsoft/powerplatform-actions/branch-solution@v0
       with:
         repo-token: ${{ secrets.GH_TOKEN }}
         branch-name: ${{ github.event.inputs.branch_name }}
         solution-folder: 'out/solutions/${{ github.event.inputs.solution_name }}'
         solution-target-folder: 'src/solutions/${{ github.event.inputs.solution_name }}'
+        allow-empty-commit: true
