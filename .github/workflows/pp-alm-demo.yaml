@@ -93,7 +93,7 @@ jobs:
     - name: Prepare solution changes for check-in into source control
       uses: microsoft/powerplatform-actions/branch-solution@0.4.0
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.GH_TOKEN }}
         branch-name: ${{ github.event.inputs.branch_name }}
         solution-folder: 'out/solutions/${{ github.event.inputs.solution_name }}'
         solution-target-folder: 'src/solutions/${{ github.event.inputs.solution_name }}'
