@@ -51,7 +51,7 @@ jobs:
         solution-file: 'out/${{ github.event.inputs.solution_name }}.zip'
 
     - name: Import solution to ${{ github.event.inputs.target_env }}
-      uses: microsoft/powerplatform-actions/import-solution@v0
+      uses: microsoft/powerplatform-actions/import-solution@0.4.0
       with:
         environment-url: ${{ steps.env_urls.outputs.target_url }}
         app-id: ${{ secrets.SPN_CLIENT_ID }}
